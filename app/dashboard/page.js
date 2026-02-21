@@ -104,9 +104,18 @@ export default function Page() {
         if (statusFilter === "active" && task.completed) return false;
         if (statusFilter === "completed" && !task.completed) return false;
 
+
         return true;
     });
 
+
+    const totalTasks = tasks.length;
+    const completedTasks = tasks.filter(t => t.completed).length;
+    const activeTasks = totalTasks - completedTasks;
+
+    const progress = totalTasks === 0
+        ? 0
+        : Math.round((completedTasks / totalTasks) * 100);
     /* ---------------- UI ---------------- */
 
     return (
@@ -168,6 +177,25 @@ export default function Page() {
                         {s}
                     </button>
                 ))}
+            </div>
+
+            <div className="border rounded p-4 mb-6">
+                <div className="flex justify-between text-sm">
+                    <span>Total: {totalTasks}</span>
+                    <span>Active: {activeTasks}</span>
+                    <span>Done: {completedTasks}</span>
+                </div>
+
+                <div className="w-full bg-gray-200 h-2 rounded mt-2">
+                    <div
+                        className="bg-black h-2 rounded transition-all"
+                        style={{ width: `${progress}%` }}
+                    />
+                </div>
+
+                <div className="text-xs text-gray-500 mt-1">
+                    Progress: {progress}%
+                </div>
             </div>
 
             <div className="space-y-2">
