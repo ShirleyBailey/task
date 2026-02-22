@@ -50,8 +50,8 @@ export default function Page() {
             title: title,
             dueDate: dueDate,
             priority: priority,
-            completed: false,
-        };
+            completed: false
+        }
 
         setTasks(prev => [...prev, newTask]);
         setTitle("");
@@ -93,6 +93,15 @@ export default function Page() {
     const cancelEdit = () => {
         setEditingId(null);
         setEditingTitle("");
+    };
+
+    const isOverdue = (task) => {
+        if (!task.dueDate) return false;
+
+        const today = new Date();
+        const due = new Date(task.dueDate);
+
+        return due < today && !task.completed;
     };
 
     /* ---------------- FILTER ---------------- */
@@ -206,7 +215,8 @@ export default function Page() {
                 {tasks.map(task => (
                     <div
                         key={task.id}
-                        className="border p-3 rounded animate-fade"
+                        className={`border p-3 rounded ${isOverdue(task) ? "border-red-500 bg-red-50" : ""
+                            }`}
                     >
 
                         {editingId === task.id ? (
@@ -216,7 +226,15 @@ export default function Page() {
                                 className="border rounded px-2 py-1 w-full"
                             />
                         ) : (
-                            <div className="font-medium">{task.title}</div>
+                            <>
+                                <div className="font-medium">{task.title}</div>
+
+                                {task.dueDate && (
+                                    <div className="text-sm text-gray-400">
+                                        Due: {task.dueDate}
+                                    </div>
+                                )}
+                            </>
                         )}
 
                         <div className="flex gap-2 mt-2">
@@ -262,6 +280,7 @@ export default function Page() {
                     </div>
                 ))}
             </div>
+
         </div>
     );
 }
