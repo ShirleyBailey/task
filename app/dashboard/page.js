@@ -263,7 +263,12 @@ export default function Page() {
                 <div className="space-y-3">
 
                     {filteredTasks.length === 0 && (
-                        <p className="text-gray-400">No tasks found</p>
+                        <div className="border rounded-lg p-6 text-center text-gray-400">
+                            <div className="text-lg mb-1">Nothing here yet</div>
+                            <div className="text-sm">
+                                Add a task to get started 🚀
+                            </div>
+                        </div>
                     )}
 
                     {filteredTasks.map(task => (
