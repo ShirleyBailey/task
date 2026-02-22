@@ -178,11 +178,13 @@ export default function Page() {
 
                 <div className="flex gap-2 mb-4">
                     <input
-                        className="border px-3 py-2 rounded-lg w-full"
+                        className="border px-3 py-2 rounded w-full"
                         placeholder="Task title"
                         value={title}
                         onChange={(e) => setTitle(e.target.value)}
-                        onKeyDown={handleKeyDown}
+                        onKeyDown={(e) => {
+                            if (e.key === "Enter") addTask();
+                        }}
                     />
 
                     <input
@@ -276,7 +278,7 @@ export default function Page() {
                                     <input
                                         value={editingTitle}
                                         onChange={(e) => setEditingTitle(e.target.value)}
-                                        className="border rounded-lg px-2 py-1 w-full mr-2"
+                                        className="border rounded px-2 py-1 w-full"
                                         onKeyDown={(e) => {
                                             if (e.key === "Enter") saveEdit(task.id);
                                             if (e.key === "Escape") cancelEdit();
