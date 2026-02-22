@@ -180,9 +180,8 @@ export default function Page() {
                     <button
                         key={p}
                         onClick={() => setPriorityFilter(p)}
-                        className={`px-3 py-1 rounded border ${
-                            priorityFilter === p ? "bg-black text-white" : ""
-                        }`}
+                        className={`px-3 py-1 rounded border ${priorityFilter === p ? "bg-black text-white" : ""
+                            }`}
                     >
                         {p}
                     </button>
@@ -195,9 +194,8 @@ export default function Page() {
                     <button
                         key={s}
                         onClick={() => setStatusFilter(s)}
-                        className={`px-3 py-1 rounded border ${
-                            statusFilter === s ? "bg-black text-white" : ""
-                        }`}
+                        className={`px-3 py-1 rounded border ${statusFilter === s ? "bg-black text-white" : ""
+                            }`}
                     >
                         {s}
                     </button>
@@ -210,9 +208,8 @@ export default function Page() {
                     <button
                         key={s}
                         onClick={() => setSortBy(s)}
-                        className={`px-3 py-1 rounded border ${
-                            sortBy === s ? "bg-black text-white" : ""
-                        }`}
+                        className={`px-3 py-1 rounded border ${sortBy === s ? "bg-black text-white" : ""
+                            }`}
                     >
                         {s}
                     </button>
@@ -226,7 +223,11 @@ export default function Page() {
                 )}
 
                 {sortedTasks.map(task => (
-                    <div key={task.id} className="border p-3 rounded">
+                    <div
+                        key={task.id}
+                        className={`p-4 rounded-xl border bg-white shadow-sm
+    transition-all duration-200 hover:shadow-md hover:-translate-y-0.5`}
+                    >
 
                         <div className="flex items-center gap-2">
                             <input
@@ -242,17 +243,29 @@ export default function Page() {
                                     className="border rounded px-2 py-1 w-full"
                                 />
                             ) : (
-                                <div className={`font-medium ${
-                                    task.completed ? "line-through text-gray-400" : ""
-                                }`}>
+                                <div className={`font-medium ${task.completed ? "line-through text-gray-400" : ""
+                                    }`}>
                                     {task.title}
                                 </div>
                             )}
                         </div>
 
                         <div className="text-sm text-gray-500 mt-1">
-                            {task.dueDate && `Due: ${task.dueDate}`}{" "}
-                            | Priority: {task.priority}
+                            {task.dueDate && (
+                                <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-md">
+                                    Due: {task.dueDate}
+                                </span>
+                            )}{" "}
+                            <span
+                                className={`text-xs px-2 py-1 rounded-full font-medium ${task.priority === "high"
+                                    ? "bg-red-100 text-red-600"
+                                    : task.priority === "medium"
+                                        ? "bg-yellow-100 text-yellow-700"
+                                        : "bg-green-100 text-green-600"
+                                    }`}
+                            >
+                                {task.priority}
+                            </span>
                         </div>
 
                         <div className="flex gap-2 mt-2">
