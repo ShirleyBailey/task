@@ -120,6 +120,7 @@ export default function Page() {
     /* ---------------- FILTER ---------------- */
 
     const filteredTasks = tasks.filter(task => {
+
         if (priorityFilter !== "all" && task.priority !== priorityFilter)
             return false;
 
@@ -129,6 +130,25 @@ export default function Page() {
         return true;
     });
 
+    const getDueStatus = (dueDate) => {
+        if (!dueDate) return "none";
+
+        const today = new Date();
+        const due = new Date(dueDate);
+
+        today.setHours(0, 0, 0, 0);
+        due.setHours(0, 0, 0, 0);
+
+        if (due < today) return "overdue";
+        if (due.getTime() === today.getTime()) return "today";
+
+        return "upcoming";
+    };
+
+    const totalCount = tasks.length;
+    const completedCount = tasks.filter(t => t.completed).length;
+    const activeCount = totalCount - completedCount;
+
     /* ---------------- UI ---------------- */
 
     return (
@@ -137,6 +157,11 @@ export default function Page() {
 
                 <h1 className="text-2xl font-bold mb-6">Dashboard</h1>
 
+                <div className="flex gap-4 mb-6 text-sm">
+                    <div>Total: {totalCount}</div>
+                    <div>Active: {activeCount}</div>
+                    <div>Completed: {completedCount}</div>
+                </div>
                 {/* INPUTS */}
 
                 <div className="flex gap-2 mb-4">
@@ -258,8 +283,24 @@ export default function Page() {
                             </div>
 
                             {task.dueDate && (
-                                <div className="text-xs text-gray-400 mt-1">
-                                    Due: {task.dueDate}
+                                <div className="text-xs">
+                                    {!task.dueDate && (
+                                        <span className="text-gray-400">No due date</span>
+                                    )}
+
+                                    {task.dueDate && (
+                                        <span className={
+                                            getDueStatus(task.dueDate) === "overdue"
+                                                ? "text-red-500"
+                                                : getDueStatus(task.dueDate) === "today"
+                                                    ? "text-orange-500"
+                                                    : "text-gray-400"
+                                        }>
+                                            {task.dueDate}
+                                            {getDueStatus(task.dueDate) === "overdue" && " • Overdue"}
+                                            {getDueStatus(task.dueDate) === "today" && " • Today"}
+                                        </span>
+                                    )}
                                 </div>
                             )}
 
