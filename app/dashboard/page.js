@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 
 export default function Page() {
     const [tasks, setTasks] = useState([]);
+    const [darkMode, setDarkMode] = useState(false);
 
     const [title, setTitle] = useState("");
     const [dueDate, setDueDate] = useState("");
@@ -16,6 +17,15 @@ export default function Page() {
 
     const [editingId, setEditingId] = useState(null);
     const [editingTitle, setEditingTitle] = useState("");
+
+    const totalTasks = tasks.length;
+    const completedTasks = tasks.filter(t => t.completed).length;
+    const activeTasks = totalTasks - completedTasks;
+    const progress = totalTasks === 0 ? 0 : Math.round((completedTasks / totalTasks) * 100);
+
+
+
+    const toggleDarkMode = () => setDarkMode(prev => !prev);
 
     /* Load tasks from localStorage */
 
@@ -30,9 +40,24 @@ export default function Page() {
     /* Persist tasks */
 
     useEffect(() => {
+        if (darkMode) {
+            document.body.classList.add("dark");
+        } else {
+            document.body.classList.remove("dark");
+        }
+    }, [darkMode]);
+
+    useEffect(() => {
         localStorage.setItem("tasks", JSON.stringify(tasks));
     }, [tasks]);
 
+    useEffect(() => {
+        if (darkMode) {
+            document.body.classList.add("dark");
+        } else {
+            document.body.classList.remove("dark");
+        }
+    }, [darkMode]);
     /* Task actions */
 
     const addTask = () => {
@@ -147,6 +172,30 @@ export default function Page() {
         <div className="p-10 max-w-3xl">
             <h1 className="text-2xl font-bold mb-6">Dashboard</h1>
 
+            <button
+                onClick={() => setDarkMode(prev => !prev)}
+                className="mb-4 px-4 py-2 border rounded-lg"
+            >
+                {darkMode ? "Light Mode" : "Dark Mode"}
+            </button>
+            <div className="border p-4 rounded-xl mb-6 bg-white shadow-sm">
+                <div className="flex justify-between text-sm">
+                    <span>Total: {totalTasks}</span>
+                    <span>Active: {activeTasks}</span>
+                    <span>Completed: {completedTasks}</span>
+                </div>
+
+                <div className="w-full bg-gray-200 h-2 rounded mt-2">
+                    <div
+                        className="bg-black h-2 rounded transition-all"
+                        style={{ width: `${progress}%` }}
+                    />
+                </div>
+
+                <div className="text-xs text-gray-500 mt-1">
+                    Progress: {progress}%
+                </div>
+            </div>
             {/* Task input */}
 
             <div className="flex gap-2 mb-4">
@@ -189,9 +238,8 @@ export default function Page() {
                     <button
                         key={p}
                         onClick={() => setPriorityFilter(p)}
-                        className={`px-3 py-1 rounded border ${
-                            priorityFilter === p ? "bg-black text-white" : ""
-                        }`}
+                        className={`px-3 py-1 rounded border ${priorityFilter === p ? "bg-black text-white" : ""
+                            }`}
                     >
                         {p}
                     </button>
@@ -205,9 +253,8 @@ export default function Page() {
                     <button
                         key={s}
                         onClick={() => setStatusFilter(s)}
-                        className={`px-3 py-1 rounded border ${
-                            statusFilter === s ? "bg-black text-white" : ""
-                        }`}
+                        className={`px-3 py-1 rounded border ${statusFilter === s ? "bg-black text-white" : ""
+                            }`}
                     >
                         {s}
                     </button>
@@ -221,9 +268,8 @@ export default function Page() {
                     <button
                         key={s}
                         onClick={() => setSortBy(s)}
-                        className={`px-3 py-1 rounded border ${
-                            sortBy === s ? "bg-black text-white" : ""
-                        }`}
+                        className={`px-3 py-1 rounded border ${sortBy === s ? "bg-black text-white" : ""
+                            }`}
                     >
                         {s}
                     </button>
@@ -240,8 +286,8 @@ export default function Page() {
                 {sortedTasks.map(task => (
                     <div
                         key={task.id}
-                        className="p-4 rounded-xl border bg-white shadow-sm
-                        transition-all duration-200 hover:shadow-md hover:-translate-y-0.5"
+                        className={`border p-4 rounded-xl transition-all hover:shadow-md ${task.completed ? "opacity-50" : "bg-white"
+                            }`}
                     >
                         <div className="flex items-center gap-2">
                             <input
@@ -257,9 +303,10 @@ export default function Page() {
                                     className="border rounded px-2 py-1 w-full"
                                 />
                             ) : (
-                                <div className={`font-medium ${
-                                    task.completed ? "line-through text-gray-400" : ""
-                                }`}>
+                                <div
+                                    className={`font-medium text-lg ${task.completed ? "line-through text-gray-400" : ""
+                                        }`}
+                                >
                                     {task.title}
                                 </div>
                             )}
@@ -273,13 +320,12 @@ export default function Page() {
                             )}
 
                             <span
-                                className={`text-xs px-2 py-1 rounded-full font-medium ${
-                                    task.priority === "high"
-                                        ? "bg-red-100 text-red-600"
-                                        : task.priority === "medium"
-                                        ? "bg-yellow-100 text-yellow-700"
-                                        : "bg-green-100 text-green-600"
-                                }`}
+                                className={`px-2 py-1 text-xs rounded-full ${task.priority === "high"
+                                    ? "bg-red-100 text-red-600"
+                                    : task.priority === "medium"
+                                        ? "bg-yellow-100 text-yellow-600"
+                                        : "bg-blue-100 text-blue-600"
+                                    }`}
                             >
                                 {task.priority}
                             </span>
@@ -288,13 +334,21 @@ export default function Page() {
                         <div className="flex gap-2 mt-3">
                             {editingId === task.id ? (
                                 <>
-                                    <button onClick={() => saveEdit(task.id)}>Save</button>
-                                    <button onClick={cancelEdit}>Cancel</button>
+                                    <button className="text-sm px-3 py-1 border rounded-lg hover:bg-gray-50">
+                                        Save
+                                    </button>
+                                    <button className="text-sm px-3 py-1 border rounded-lg hover:bg-gray-50">
+                                        Cancel
+                                    </button>
                                 </>
                             ) : (
                                 <>
-                                    <button onClick={() => startEdit(task)}>Edit</button>
-                                    <button onClick={() => deleteTask(task.id)}>Delete</button>
+                                    <button className="text-sm px-3 py-1 border rounded-lg hover:bg-gray-50">
+                                        Edit
+                                    </button>
+                                    <button className="text-sm px-3 py-1 border rounded-lg hover:bg-gray-50">
+                                        Delete
+                                    </button>
                                 </>
                             )}
                         </div>
