@@ -2,6 +2,10 @@
 
 import { useEffect, useState } from "react";
 
+const handleKeyDown = (e) => {
+    if (e.key === "Enter") addTask();
+};
+
 export default function Page() {
     const [tasks, setTasks] = useState([]);
     const [title, setTitle] = useState("");
@@ -36,7 +40,7 @@ export default function Page() {
 
         const newTask = {
             id: crypto.randomUUID(),
-            title,
+            title: title.trim(),
             dueDate,
             priority,
             completed: false,
@@ -79,7 +83,7 @@ export default function Page() {
         setTasks(prev =>
             prev.map(task =>
                 task.id === id
-                    ? { ...task, title: editingTitle }
+                    ? { ...task, title: editingTitle.trim() }
                     : task
             )
         );
@@ -115,6 +119,7 @@ export default function Page() {
                         placeholder="Task title"
                         value={title}
                         onChange={(e) => setTitle(e.target.value)}
+                        onKeyDown={handleKeyDown}
                     />
 
                     <input
@@ -149,11 +154,10 @@ export default function Page() {
                         <button
                             key={p}
                             onClick={() => setPriorityFilter(p)}
-                            className={`px-3 py-1 rounded-lg border transition ${
-                                priorityFilter === p
-                                    ? "bg-black text-white"
-                                    : "hover:bg-gray-100"
-                            }`}
+                            className={`px-3 py-1 rounded-lg border transition ${priorityFilter === p
+                                ? "bg-black text-white"
+                                : "hover:bg-gray-100"
+                                }`}
                         >
                             {p}
                         </button>
@@ -167,11 +171,10 @@ export default function Page() {
                         <button
                             key={s}
                             onClick={() => setStatusFilter(s)}
-                            className={`px-3 py-1 rounded-lg border transition ${
-                                statusFilter === s
-                                    ? "bg-black text-white"
-                                    : "hover:bg-gray-100"
-                            }`}
+                            className={`px-3 py-1 rounded-lg border transition ${statusFilter === s
+                                ? "bg-black text-white"
+                                : "hover:bg-gray-100"
+                                }`}
                         >
                             {s}
                         </button>
@@ -199,23 +202,25 @@ export default function Page() {
                                         value={editingTitle}
                                         onChange={(e) => setEditingTitle(e.target.value)}
                                         className="border rounded-lg px-2 py-1 w-full mr-2"
+                                        onKeyDown={(e) => {
+                                            if (e.key === "Enter") saveEdit(task.id);
+                                            if (e.key === "Escape") cancelEdit();
+                                        }}
                                     />
                                 ) : (
-                                    <div className={`font-medium ${
-                                        task.completed ? "line-through opacity-40" : ""
-                                    }`}>
+                                    <div className={`font-medium ${task.completed ? "line-through opacity-40" : ""
+                                        }`}>
                                         {task.title}
                                     </div>
                                 )}
 
                                 <span
-                                    className={`text-xs px-2 py-1 rounded-full ${
-                                        task.priority === "high"
-                                            ? "bg-red-100 text-red-600"
-                                            : task.priority === "medium"
+                                    className={`text-xs px-2 py-1 rounded-full ${task.priority === "high"
+                                        ? "bg-red-100 text-red-600"
+                                        : task.priority === "medium"
                                             ? "bg-yellow-100 text-yellow-600"
                                             : "bg-green-100 text-green-600"
-                                    }`}
+                                        }`}
                                 >
                                     {task.priority}
                                 </span>
