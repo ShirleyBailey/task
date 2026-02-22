@@ -112,6 +112,11 @@ export default function Page() {
     /* ---------------- SORT ---------------- */
 
     const sortedTasks = [...filteredTasks].sort((a, b) => {
+
+        if (a.completed !== b.completed) {
+            return a.completed ? 1 : -1;
+        }
+
         if (sortBy === "newest") {
             return b.createdAt - a.createdAt;
         }
