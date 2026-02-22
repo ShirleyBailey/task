@@ -1,59 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import {
-    DndContext,
-    closestCenter
-} from "@dnd-kit/core";
-
-import {
-    SortableContext,
-    useSortable,
-    verticalListSortingStrategy,
-    arrayMove
-} from "@dnd-kit/sortable";
-
-import { CSS } from "@dnd-kit/utilities";
-
-function SortableTask({ task, children }) {
-    const {
-        attributes,
-        listeners,
-        setNodeRef,
-        transform,
-        transition
-    } = useSortable({ id: task.id });
-
-    const style = {
-        transform: CSS.Transform.toString(transform),
-        transition,
-    };
-
-    return (
-        <div ref={setNodeRef} style={style} className="border p-3 rounded bg-white">
-            <div className="flex items-start gap-3">
-
-                {/* ✅ DRAG HANDLE */}
-                <div
-                    {...attributes}
-                    {...listeners}
-                    className="cursor-grab text-gray-400 hover:text-black"
-                >
-                    ☰
-                </div>
-
-                <div className="flex-1">
-                    {children}
-                </div>
-
-            </div>
-        </div>
-    );
-}
 
 export default function Page() {
     const [tasks, setTasks] = useState([]);
-
     const [title, setTitle] = useState("");
     const [dueDate, setDueDate] = useState("");
     const [priority, setPriority] = useState("medium");
@@ -67,13 +17,9 @@ export default function Page() {
     /* ---------------- LOAD ---------------- */
 
     useEffect(() => {
-        const stored = localStorage.getItem("tasks");
-        if (stored) {
-            try {
-                setTasks(JSON.parse(stored));
-            } catch {
-                setTasks([]);
-            }
+        const storedTasks = localStorage.getItem("tasks");
+        if (storedTasks) {
+            setTasks(JSON.parse(storedTasks));
         }
     }, []);
 
@@ -91,9 +37,9 @@ export default function Page() {
         const newTask = {
             id: crypto.randomUUID(),
             title,
-            completed: false,
             dueDate,
-            priority
+            priority,
+            completed: false,
         };
 
         setTasks(prev => [...prev, newTask]);
@@ -122,7 +68,14 @@ export default function Page() {
         setEditingTitle(task.title);
     };
 
+    const cancelEdit = () => {
+        setEditingId(null);
+        setEditingTitle("");
+    };
+
     const saveEdit = (id) => {
+        if (!editingTitle.trim()) return;
+
         setTasks(prev =>
             prev.map(task =>
                 task.id === id
@@ -131,27 +84,7 @@ export default function Page() {
             )
         );
 
-        setEditingId(null);
-        setEditingTitle("");
-    };
-
-    const cancelEdit = () => {
-        setEditingId(null);
-        setEditingTitle("");
-    };
-
-    /* ---------------- DND ---------------- */
-
-    const handleDragEnd = (event) => {
-        const { active, over } = event;
-
-        if (!over || active.id === over.id) return;
-
-        setTasks(prev => {
-            const oldIndex = prev.findIndex(t => t.id === active.id);
-            const newIndex = prev.findIndex(t => t.id === over.id);
-            return arrayMove(prev, oldIndex, newIndex);
-        });
+        cancelEdit();
     };
 
     /* ---------------- FILTER ---------------- */
@@ -160,150 +93,187 @@ export default function Page() {
         if (priorityFilter !== "all" && task.priority !== priorityFilter)
             return false;
 
-        if (statusFilter === "active" && task.completed)
-            return false;
-
-        if (statusFilter === "completed" && !task.completed)
-            return false;
+        if (statusFilter === "active" && task.completed) return false;
+        if (statusFilter === "completed" && !task.completed) return false;
 
         return true;
-    });
-
-    /* ---------------- SORT ---------------- */
-
-    const sortedTasks = [...filteredTasks].sort((a, b) => {
-        if (!a.dueDate) return 1;
-        if (!b.dueDate) return -1;
-        return new Date(a.dueDate) - new Date(b.dueDate);
     });
 
     /* ---------------- UI ---------------- */
 
     return (
-        <div className="p-10 max-w-3xl">
-            <h1 className="text-2xl font-bold mb-6">Dashboard</h1>
+        <div className="min-h-screen bg-gray-100 p-10">
+            <div className="max-w-3xl mx-auto bg-white rounded-2xl shadow-sm p-6">
 
-            {/* INPUT */}
-            <div className="flex gap-2 mb-4">
-                <input
-                    className="border px-3 py-2 rounded w-full"
-                    placeholder="Task title"
-                    value={title}
-                    onChange={(e) => setTitle(e.target.value)}
-                />
+                <h1 className="text-2xl font-bold mb-6">Dashboard</h1>
 
-                <input
-                    type="date"
-                    className="border px-3 py-2 rounded"
-                    value={dueDate}
-                    onChange={(e) => setDueDate(e.target.value)}
-                />
+                {/* INPUTS */}
 
-                <select
-                    className="border px-3 py-2 rounded"
-                    value={priority}
-                    onChange={(e) => setPriority(e.target.value)}
-                >
-                    <option value="high">High</option>
-                    <option value="medium">Medium</option>
-                    <option value="low">Low</option>
-                </select>
+                <div className="flex gap-2 mb-4">
+                    <input
+                        className="border px-3 py-2 rounded-lg w-full"
+                        placeholder="Task title"
+                        value={title}
+                        onChange={(e) => setTitle(e.target.value)}
+                    />
 
-                <button
-                    onClick={addTask}
-                    className="bg-black text-white px-4 rounded"
-                >
-                    Add
-                </button>
-            </div>
+                    <input
+                        type="date"
+                        className="border px-3 py-2 rounded-lg"
+                        value={dueDate}
+                        onChange={(e) => setDueDate(e.target.value)}
+                    />
 
-            {/* FILTERS */}
-            <div className="flex gap-2 mb-4">
-                {["all", "high", "medium", "low"].map(p => (
-                    <button
-                        key={p}
-                        onClick={() => setPriorityFilter(p)}
-                        className={`px-3 py-1 rounded border ${
-                            priorityFilter === p ? "bg-black text-white" : ""
-                        }`}
+                    <select
+                        className="border px-3 py-2 rounded-lg"
+                        value={priority}
+                        onChange={(e) => setPriority(e.target.value)}
                     >
-                        {p}
-                    </button>
-                ))}
-            </div>
+                        <option value="high">High</option>
+                        <option value="medium">Medium</option>
+                        <option value="low">Low</option>
+                    </select>
 
-            <div className="flex gap-2 mb-6">
-                {["all", "active", "completed"].map(s => (
                     <button
-                        key={s}
-                        onClick={() => setStatusFilter(s)}
-                        className={`px-3 py-1 rounded border ${
-                            statusFilter === s ? "bg-black text-white" : ""
-                        }`}
+                        onClick={addTask}
+                        className="px-4 rounded-lg bg-black text-white hover:opacity-80 transition"
                     >
-                        {s}
+                        Add
                     </button>
-                ))}
-            </div>
+                </div>
 
-            {/* TASK LIST */}
-            <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-                <SortableContext
-                    items={sortedTasks.map(t => t.id)}
-                    strategy={verticalListSortingStrategy}
-                >
-                    <div className="space-y-2">
-                        {sortedTasks.map(task => (
-                            <SortableTask key={task.id} task={task}>
+                {/* PRIORITY FILTER */}
+
+                <div className="flex gap-2 mb-3">
+                    {["all", "high", "medium", "low"].map(p => (
+                        <button
+                            key={p}
+                            onClick={() => setPriorityFilter(p)}
+                            className={`px-3 py-1 rounded-lg border transition ${
+                                priorityFilter === p
+                                    ? "bg-black text-white"
+                                    : "hover:bg-gray-100"
+                            }`}
+                        >
+                            {p}
+                        </button>
+                    ))}
+                </div>
+
+                {/* STATUS FILTER */}
+
+                <div className="flex gap-2 mb-6">
+                    {["all", "active", "completed"].map(s => (
+                        <button
+                            key={s}
+                            onClick={() => setStatusFilter(s)}
+                            className={`px-3 py-1 rounded-lg border transition ${
+                                statusFilter === s
+                                    ? "bg-black text-white"
+                                    : "hover:bg-gray-100"
+                            }`}
+                        >
+                            {s}
+                        </button>
+                    ))}
+                </div>
+
+                {/* TASK LIST */}
+
+                <div className="space-y-3">
+
+                    {filteredTasks.length === 0 && (
+                        <p className="text-gray-400">No tasks found</p>
+                    )}
+
+                    {filteredTasks.map(task => (
+                        <div
+                            key={task.id}
+                            className="border rounded-xl p-4 hover:shadow-sm transition bg-white"
+                        >
+
+                            <div className="flex justify-between items-center">
+
                                 {editingId === task.id ? (
                                     <input
                                         value={editingTitle}
                                         onChange={(e) => setEditingTitle(e.target.value)}
-                                        className="border rounded px-2 py-1 w-full"
+                                        className="border rounded-lg px-2 py-1 w-full mr-2"
                                     />
                                 ) : (
-                                    <div className="font-medium">
+                                    <div className={`font-medium ${
+                                        task.completed ? "line-through opacity-40" : ""
+                                    }`}>
                                         {task.title}
                                     </div>
                                 )}
 
-                                <div className="flex gap-2 mt-2 text-sm">
-                                    <button onClick={() => toggleTask(task.id)}>
-                                        {task.completed ? "Undo" : "Complete"}
-                                    </button>
+                                <span
+                                    className={`text-xs px-2 py-1 rounded-full ${
+                                        task.priority === "high"
+                                            ? "bg-red-100 text-red-600"
+                                            : task.priority === "medium"
+                                            ? "bg-yellow-100 text-yellow-600"
+                                            : "bg-green-100 text-green-600"
+                                    }`}
+                                >
+                                    {task.priority}
+                                </span>
+                            </div>
 
-                                    {editingId === task.id ? (
-                                        <>
-                                            <button onClick={() => saveEdit(task.id)}>Save</button>
-                                            <button onClick={cancelEdit}>Cancel</button>
-                                        </>
-                                    ) : (
-                                        <>
-                                            <button onClick={() => startEdit(task)}>Edit</button>
-                                            <button onClick={() => deleteTask(task.id)}>Delete</button>
-                                        </>
-                                    )}
+                            {task.dueDate && (
+                                <div className="text-xs text-gray-400 mt-1">
+                                    Due: {task.dueDate}
                                 </div>
+                            )}
 
-                                {/* Priority Badge */}
-                                {task.priority && (
-                                    <span
-                                        className={`px-2 py-1 text-xs rounded-full font-medium ${
-                                            task.priority === "high"
-                                                ? "bg-red-100 text-red-600"
-                                                : task.priority === "medium"
-                                                ? "bg-yellow-100 text-yellow-600"
-                                                : "bg-blue-100 text-blue-600"
-                                        }`}
-                                    >
-                                        {task.priority}
-                                    </span>
+                            <div className="flex gap-2 mt-3">
+
+                                <button
+                                    onClick={() => toggleTask(task.id)}
+                                    className="px-3 py-1 rounded-lg bg-black text-white hover:opacity-80 transition"
+                                >
+                                    {task.completed ? "Undo" : "Complete"}
+                                </button>
+
+                                {editingId === task.id ? (
+                                    <>
+                                        <button
+                                            onClick={() => saveEdit(task.id)}
+                                            className="px-3 py-1 rounded-lg border hover:bg-gray-100 transition"
+                                        >
+                                            Save
+                                        </button>
+
+                                        <button
+                                            onClick={cancelEdit}
+                                            className="px-3 py-1 rounded-lg border hover:bg-gray-100 transition"
+                                        >
+                                            Cancel
+                                        </button>
+                                    </>
+                                ) : (
+                                    <>
+                                        <button
+                                            onClick={() => startEdit(task)}
+                                            className="px-3 py-1 rounded-lg border hover:bg-gray-100 transition"
+                                        >
+                                            Edit
+                                        </button>
+
+                                        <button
+                                            onClick={() => deleteTask(task.id)}
+                                            className="px-3 py-1 rounded-lg border text-red-500 hover:bg-red-50 transition"
+                                        >
+                                            Delete
+                                        </button>
+                                    </>
                                 )}
-                            </SortableTask>
-                        ))}
-                    </div>
-                </SortableContext>
-            </DndContext>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </div>
         </div>
     );
 }
