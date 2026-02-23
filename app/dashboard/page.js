@@ -21,6 +21,7 @@ export default function Page() {
     const [editingTitle, setEditingTitle] = useState("");
     const [toast, setToast] = useState(null);
 
+    const [search, setSearch] = useState("");
 
     const totalCount = tasks.length;
     const completedCount = tasks.filter(t => t.completed).length;
@@ -143,6 +144,9 @@ export default function Page() {
     };
 
     const filteredTasks = tasks.filter(task => {
+
+        if (search && !task.title.toLowerCase().includes(search.toLowerCase()))
+            return false;
 
         if (priorityFilter !== "all" && task.priority !== priorityFilter)
             return false;
@@ -280,7 +284,15 @@ export default function Page() {
                             {s}
                         </button>
                     ))}
+
+                    <input
+                        className="border px-3 py-2 rounded flex-1"
+                        placeholder="Search tasks..."
+                        value={search}
+                        onChange={(e) => setSearch(e.target.value)}
+                    />
                 </div>
+
 
                 <button
                     onClick={() => setTasks(tasks.filter(t => !t.completed))}
