@@ -21,6 +21,12 @@ export default function Page() {
     const [editingTitle, setEditingTitle] = useState("");
     const [toast, setToast] = useState(null);
 
+
+    const totalCount = tasks.length;
+    const completedCount = tasks.filter(t => t.completed).length;
+    const activeCount = totalCount - completedCount;
+    const progress = totalCount === 0 ? 0 : Math.round((completedCount / totalCount) * 100);
+
     /* ---------------- LOAD ---------------- */
 
     useEffect(() => {
@@ -99,7 +105,7 @@ export default function Page() {
 
     const startEdit = (task) => {
         setEditingId(task.id);
-        setEditingTitle(task.title);        
+        setEditingTitle(task.title);
     };
 
     const cancelEdit = () => {
@@ -162,9 +168,6 @@ export default function Page() {
         return "upcoming";
     };
 
-    const totalCount = tasks.length;
-    const completedCount = tasks.filter(t => t.completed).length;
-    const activeCount = totalCount - completedCount;
 
     /* ---------------- UI ---------------- */
 
@@ -188,6 +191,19 @@ export default function Page() {
                     <span>Total: {totalCount}</span>
                     <span>Active: {activeCount}</span>
                     <span>Completed: {completedCount}</span>
+                </div>
+
+                <div className="mt-4 mb-3">
+                    <div className="text-sm mb-1">
+                        Progress: {progress}%
+                    </div>
+
+                    <div className="w-full h-1 bg-gray-200 rounded">
+                        <div
+                            className="h-1 bg-black rounded"
+                            style={{ width: `${progress}%` }}
+                        />
+                    </div>
                 </div>
                 {/* INPUTS */}
 
