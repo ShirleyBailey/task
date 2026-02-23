@@ -66,12 +66,6 @@ The architecture supports:
 
 ---
 
-## 🖥 Preview
-
-(Add screenshots here)
-
----
-
 ## 📌 Why This Project Matters
 
 This repository demonstrates frontend system design principles,
