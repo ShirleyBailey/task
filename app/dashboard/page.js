@@ -9,6 +9,7 @@ const handleKeyDown = (e) => {
 
 export default function Page() {
     const [tasks, setTasks] = useState([]);
+    const [history, setHistory] = useState([]);
     const [draggedTask, setDraggedTask] = useState(null);
     const [title, setTitle] = useState("");
     const [dueDate, setDueDate] = useState("");
@@ -53,7 +54,23 @@ export default function Page() {
     useEffect(() => {
         localStorage.setItem("sortType", sortType);
     }, [sortType]);
+
+
     /* ---------------- ACTIONS ---------------- */
+
+    const undoLastAction = () => {
+        if (history.length === 0) return;
+
+        const previousState = history[history.length - 1];
+
+        setTasks(previousState);
+        setHistory(prev => prev.slice(0, -1));
+    };
+
+    const saveHistory = () => {
+        setHistory(prev => [...prev, structuredClone(tasks)]);
+    };
+
     const addTask = () => {
         const trimmedTitle = title.trim();
 
@@ -81,6 +98,8 @@ export default function Page() {
             return;
         }
 
+        saveHistory();   // ✅ 여기로 이동 💥
+
         const newTask = {
             id: crypto.randomUUID(),
             title: trimmedTitle,
@@ -91,6 +110,7 @@ export default function Page() {
         };
 
         setTasks(prev => [...prev, newTask]);
+
         showToast("Task added 🚀");
 
         setTitle("");
@@ -100,6 +120,8 @@ export default function Page() {
     };
 
     const toggleTask = (id) => {
+        saveHistory();
+
         setTasks(prev =>
             prev.map(task =>
                 task.id === id
@@ -107,12 +129,12 @@ export default function Page() {
                     : task
             )
         );
-        showToast("Task status updated ✅");
     };
 
     const deleteTask = (id) => {
+        saveHistory();
+
         setTasks(prev => prev.filter(task => task.id !== id));
-        showToast("Task deleted 🗑️");
     };
 
     const handleDragStart = (task) => {
@@ -361,7 +383,10 @@ export default function Page() {
                 </div>
 
                 <button
-                    onClick={() => setTasks(tasks.filter(t => !t.completed))}
+                    onClick={() => {
+                        saveHistory();
+                        setTasks(tasks.filter(t => !t.completed));
+                    }}
                     className="text-sm text-red-500 hover:underline"
                 >
                     Clear Completed
@@ -461,7 +486,7 @@ export default function Page() {
                                         onClick={() => toggleTask(task.id)}
                                         className="px-3 py-1 rounded-lg bg-black text-white hover:opacity-80 transition"
                                     >
-                                        {task.completed ? "Undo" : "Complete"}
+                                        {task.completed ? "Restore" : "Complete"}
                                     </button>
 
                                     {editingId === task.id ? (
