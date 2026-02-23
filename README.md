@@ -1,28 +1,25 @@
 # Task Dashboard
 
-Production-oriented full-stack task management system built with Next.js, TypeScript, Prisma, and PostgreSQL.
+Full-stack task management system built with Next.js, TypeScript, Prisma, and PostgreSQL.
 
-This project demonstrates structured full-stack architecture — combining scalable frontend patterns with type-safe backend services and relational data modeling.
+This project demonstrates modern full-stack development using a type-safe stack,
+structured project organization, and relational database modeling.
 
 ---
 
-## 🏗 Architecture
+## 🏗 Overview
 
-The system is built using a modern full-stack approach:
+Task Dashboard is designed as a structured, production-style application rather than a simple UI demo.
 
-- Next.js App Router (Server & Client Components separation)
-- PostgreSQL for persistent relational data storage
+It integrates:
+
+- Next.js App Router for server/client separation
 - Prisma ORM for type-safe database interaction
-- Modular logic isolation through `lib/`
-- Environment-driven configuration management
-  
-app/ → Routing & UI boundaries
-lib/ → Business logic & data layer
-prisma/ → Schema & database modeling
-styles/ → UI system
+- PostgreSQL for persistent relational storage
+- Environment-based configuration
+- Modular project organization
 
-
-The architecture supports long-term maintainability and feature expansion without structural rewrites.
+The goal of this project is to reflect full-stack architectural awareness while keeping implementation clean and maintainable.
 
 ---
 
@@ -34,44 +31,44 @@ The architecture supports long-term maintainability and feature expansion withou
 - TypeScript
 - TailwindCSS
 
-### Backend & Data Layer
-- Next.js server-side capabilities
+### Backend & Data
 - Prisma ORM
 - PostgreSQL
-- Relational schema design
-- Type-safe data contracts
+- Relational schema modeling
+- Server-side data handling via Next.js
 
-### Engineering & Tooling
+### Tooling & Structure
 - ESLint configuration
 - Environment variable management
-- Scalable project structure
-- Separation of concerns across layers
+- Modular folder structure
+- Type-safe full-stack integration
 
 ---
 
-## 🧠 Engineering Principles Applied
+## 🧠 Engineering Considerations
 
-- Strong separation between UI, business logic, and persistence layer
-- Database-first modeling with relational integrity
-- Type safety across the full stack
-- Modular architecture designed for feature growth
-- Clean boundaries to reduce long-term technical debt
+- Clear separation between UI and data persistence
+- Type safety across the entire stack
+- Structured database schema design
+- Maintainable project organization
+- Foundation ready for future feature expansion
 
 ---
 
-## 🚀 Future Enhancements
+## 🚀 Potential Extensions
 
-- Authentication & role-based authorization
+- Authentication & role-based access
+- Task filtering & analytics
 - Multi-user collaboration
 - Real-time updates
-- Activity logging
-- API versioning strategy
+- Deployment pipeline integration
 
 ---
 
 ## 📌 Purpose of This Repository
 
-This is not a simple CRUD demo.
+This repository is built as a structured full-stack foundation,
+demonstrating practical integration between frontend architecture
+and relational database-backed backend logic.
 
-It represents a production-ready foundation for a scalable task management platform,
-designed with system boundaries, relational modeling, and long-term evolution in mind.
+It reflects a production-oriented mindset rather than a tutorial-style implementation.
