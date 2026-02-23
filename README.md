@@ -1,37 +1,80 @@
-# Task Dashboard
+# Task Dashboard UI
 
-A lightweight task management dashboard built with Next.js and Tailwind CSS.
+A scalable task management dashboard built with React and TypeScript.
 
-## Overview
+This project focuses on frontend architecture, state management structure,
+and building maintainable UI systems rather than just implementing features.
 
-This project is a minimal task dashboard designed to demonstrate frontend structure, UI composition, and basic API architecture.  
-The focus of the project is clarity, maintainability, and clean component organization rather than feature completeness.
+---
 
-## Tech Stack
+## 🎯 Project Goals
 
-- Next.js
-- Tailwind CSS
+- Design a modular and extensible component architecture
+- Implement predictable and scalable state management
+- Maintain clean separation between UI, logic, and data layers
+- Ensure the system can evolve without structural rewrites
+
+---
+
+## 🧱 Architecture Overview
+
+The project follows a structured frontend architecture:
+
+- Feature-based folder organization
+- Isolated component layers
+- Centralized state management
+- Clear separation between presentation and business logic
+
+This structure allows the application to scale as new features are introduced.
+
+---
+
+## ⚙️ Tech Stack
+
+- React
 - TypeScript
-- API Routes
+- Zustand / Redux Toolkit
+- TailwindCSS
+- Vite / Next.js (depending on your setup)
 
-## Features
+---
 
-- Dashboard layout
-- Task-oriented UI structure
-- Component-based design
-- Responsive styling
+## 🧠 Engineering Decisions
 
-## Purpose
+### State Management
+Global and local state are separated intentionally to reduce unnecessary re-renders and maintain predictability.
 
-This project was created as a demonstration sample to showcase:
+### Component Design
+Components are structured to minimize tight coupling and encourage reuse.
 
-- Application structure
-- UI architecture
-- Code organization
-- Developer workflow
+### Scalability
+The architecture supports:
+- Adding new task types
+- Integrating backend APIs
+- Expanding dashboard modules
+- Introducing role-based views
 
-## Running the Project
+---
 
-```bash
-npm install
-npm run dev
+## 🚀 Potential Extensions
+
+- Backend integration (REST API)
+- Authentication & authorization
+- Real-time updates
+- Analytics dashboard
+- Optimistic UI updates
+
+---
+
+## 🖥 Preview
+
+(Add screenshots here)
+
+---
+
+## 📌 Why This Project Matters
+
+This repository demonstrates frontend system design principles,
+not just UI implementation.
+
+The focus is on writing code that scales with product complexity.
