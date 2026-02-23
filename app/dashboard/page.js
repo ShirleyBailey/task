@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 
 const handleKeyDown = (e) => {
     if (e.key === "Enter") addTask();
@@ -210,12 +211,18 @@ export default function Page() {
             )}
             <div className="max-w-3xl mx-auto bg-white rounded-2xl shadow-sm p-6">
 
-                <h1 className="text-2xl font-bold mb-6">Dashboard</h1>
+                <h1 className="text-2xl font-bold mb-2">Dashboard</h1>
 
-                <div className="flex gap-4 text-sm text-gray-500 mb-4">
-                    <span>Total: {totalCount}</span>
-                    <span>Active: {activeCount}</span>
-                    <span>Completed: {completedCount}</span>
+                <div className="flex gap-2 mb-4">
+                    <span className="text-xs bg-gray-100 px-2 py-1 rounded">
+                        Total {totalCount}
+                    </span>
+                    <span className="text-xs bg-gray-100 px-2 py-1 rounded">
+                        Active {activeCount}
+                    </span>
+                    <span className="text-xs bg-gray-100 px-2 py-1 rounded">
+                        Done {completedCount}
+                    </span>
                 </div>
 
                 <div className="mt-4 mb-3">
@@ -273,64 +280,42 @@ export default function Page() {
                     )}
                 </div>
 
-                <div className="space-y-4 mb-6">
+                <div className="flex gap-3 mb-5">
 
-                    <section>
-                        <div className="text-xs text-gray-500 mb-1">Priority</div>
-                        <div className="flex gap-2">
-                            {["all", "high", "medium", "low"].map(p => (
-                                <button
-                                    key={p}
-                                    onClick={() => setPriorityFilter(p)}
-                                    className={`px-3 py-1 rounded-lg border text-sm transition
-                        ${priorityFilter === p
-                                            ? "bg-black text-white"
-                                            : "hover:bg-gray-100"
-                                        }`}
-                                >
-                                    {p}
-                                </button>
-                            ))}
-                        </div>
-                    </section>
+                    <select
+                        className="border px-3 py-2 rounded-lg text-sm bg-white 
+           focus:outline-none focus:ring-2 focus:ring-black/20"
+                        value={priorityFilter}
+                        onChange={(e) => setPriorityFilter(e.target.value)}
+                    >
+                        <option value="all">All Priority</option>
+                        <option value="high">High Priority</option>
+                        <option value="medium">Medium Priority</option>
+                        <option value="low">Low Priority</option>
+                    </select>
 
-                    <section>
-                        <div className="text-xs text-gray-500 mb-1">Status</div>
-                        <div className="flex gap-2">
-                            {["all", "active", "completed"].map(s => (
-                                <button
-                                    key={s}
-                                    onClick={() => setStatusFilter(s)}
-                                    className={`px-3 py-1 rounded-lg border text-sm transition
-                        ${statusFilter === s
-                                            ? "bg-black text-white"
-                                            : "hover:bg-gray-100"
-                                        }`}
-                                >
-                                    {s}
-                                </button>
-                            ))}
-                        </div>
-                    </section>
+                    <select
+                        className="border px-3 py-2 rounded-lg text-sm bg-white 
+           focus:outline-none focus:ring-2 focus:ring-black/20"
+                        value={statusFilter}
+                        onChange={(e) => setStatusFilter(e.target.value)}
+                    >
+                        <option value="all">All Status</option>
+                        <option value="active">Active</option>
+                        <option value="completed">Completed</option>
+                    </select>
 
-                    <section>
-                        <div className="text-xs text-gray-500 mb-1">Sort</div>
-                        <div className="flex gap-2">
-                            {["newest", "oldest", "priority", "dueDate"].map(type => (
-                                <button
-                                    key={type}
-                                    onClick={() => setSortType(type)}
-                                    className={`px-3 py-1 rounded-lg border text-sm transition
-                        ${sortType === type
-                                            ? "bg-black text-white"
-                                            : "hover:bg-gray-100"
-                                        }`}
-                                >
-                                    {type}
-                                </button>
-                            ))}
-                        </div>
-                    </section>
+                    <select
+                        className="border px-3 py-2 rounded-lg text-sm bg-white 
+           focus:outline-none focus:ring-2 focus:ring-black/20"
+                        value={sortType}
+                        onChange={(e) => setSortType(e.target.value)}
+                    >
+                        <option value="newest">Newest</option>
+                        <option value="oldest">Oldest</option>
+                        <option value="priority">Priority</option>
+                        <option value="dueDate">Due Date</option>
+                    </select>
 
                 </div>
 
@@ -364,115 +349,122 @@ export default function Page() {
                         </div>
                     )}
 
-                    {sortedTasks.map(task => (
-                        <div
-                            key={task.id}
-                            className="border rounded-xl p-4 hover:shadow-sm transition bg-white"
-                        >
+                    <AnimatePresence>
+                        {sortedTasks.map(task => (
+                            <motion.div
+                                key={task.id}
+                                initial={{ opacity: 0, y: 10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, y: -10 }}
+                                transition={{ duration: 0.2 }}
+                                className="border rounded-xl p-4 hover:shadow-sm transition bg-white"
+                            >
 
-                            <div className="flex justify-between items-center">
+                                <div className="flex justify-between items-center">
 
-                                {editingId === task.id ? (
-                                    <input
-                                        value={editingTitle}
-                                        onChange={(e) => setEditingTitle(e.target.value)}
-                                        className="border rounded px-2 py-1 w-full"
-                                        onKeyDown={(e) => {
-                                            if (e.key === "Enter") saveEdit(task.id);
-                                            if (e.key === "Escape") cancelEdit();
-                                        }}
-                                    />
-                                ) : (
-                                    <div className={`font-medium ${isOverdue(task) ? "text-red-500" : ""}`}>
-                                        {task.title}
-                                    </div>
-                                )}
-
-                                <span
-                                    className={`text-xs px-2 py-1 rounded-full ${task.priority === "high"
-                                        ? "bg-red-100 text-red-600"
-                                        : task.priority === "medium"
-                                            ? "bg-yellow-100 text-yellow-600"
-                                            : "bg-green-100 text-green-600"
-                                        }`}
-                                >
-                                    {task.priority}
-                                </span>
-
-                                {isOverdue(task) && (
-                                    <span className="text-xs px-2 py-1 rounded-full bg-red-100 text-red-600">
-                                        overdue
-                                    </span>
-                                )}
-                            </div>
-
-                            {task.dueDate && (
-                                <div className="text-xs">
-                                    {!task.dueDate && (
-                                        <span className="text-gray-400">No due date</span>
+                                    {editingId === task.id ? (
+                                        <input
+                                            value={editingTitle}
+                                            onChange={(e) => setEditingTitle(e.target.value)}
+                                            className="border rounded px-2 py-1 w-full"
+                                            onKeyDown={(e) => {
+                                                if (e.key === "Enter") saveEdit(task.id);
+                                                if (e.key === "Escape") cancelEdit();
+                                            }}
+                                        />
+                                    ) : (
+                                        <div className={`font-medium ${isOverdue(task) ? "text-red-500" : ""}`}>
+                                            {task.title}
+                                        </div>
                                     )}
 
-                                    {task.dueDate && (
-                                        <span className={
-                                            getDueStatus(task.dueDate) === "overdue"
-                                                ? "text-red-500"
-                                                : getDueStatus(task.dueDate) === "today"
-                                                    ? "text-orange-500"
-                                                    : "text-gray-400"
-                                        }>
-                                            {task.dueDate}
-                                            {getDueStatus(task.dueDate) === "overdue" && " • Overdue"}
-                                            {getDueStatus(task.dueDate) === "today" && " • Today"}
+                                    <span
+                                        className={`text-xs px-2 py-1 rounded-full font-medium
+        ${task.priority === "high"
+                                                ? "bg-red-50 text-red-600"
+                                                : task.priority === "medium"
+                                                    ? "bg-amber-50 text-amber-600"
+                                                    : "bg-gray-100 text-gray-600"
+                                            }`}
+                                    >
+                                        {task.priority}
+                                    </span>
+
+                                    {isOverdue(task) && (
+                                        <span className="text-xs px-2 py-1 rounded-full bg-red-100 text-red-600">
+                                            overdue
                                         </span>
                                     )}
                                 </div>
-                            )}
 
-                            <div className="flex gap-2 mt-3">
+                                {task.dueDate && (
+                                    <div className="text-xs">
+                                        {!task.dueDate && (
+                                            <span className="text-gray-400">No due date</span>
+                                        )}
 
-                                <button
-                                    onClick={() => toggleTask(task.id)}
-                                    className="px-3 py-1 rounded-lg bg-black text-white hover:opacity-80 transition"
-                                >
-                                    {task.completed ? "Undo" : "Complete"}
-                                </button>
-
-                                {editingId === task.id ? (
-                                    <>
-                                        <button
-                                            onClick={() => saveEdit(task.id)}
-                                            className="px-3 py-1 rounded-lg border hover:bg-gray-100 transition"
-                                        >
-                                            Save
-                                        </button>
-
-                                        <button
-                                            onClick={cancelEdit}
-                                            className="px-3 py-1 rounded-lg border hover:bg-gray-100 transition"
-                                        >
-                                            Cancel
-                                        </button>
-                                    </>
-                                ) : (
-                                    <>
-                                        <button
-                                            onClick={() => startEdit(task)}
-                                            className="px-3 py-1 rounded-lg border hover:bg-gray-100 transition"
-                                        >
-                                            Edit
-                                        </button>
-
-                                        <button
-                                            onClick={() => deleteTask(task.id)}
-                                            className="px-3 py-1 rounded-lg border text-red-500 hover:bg-red-50 transition"
-                                        >
-                                            Delete
-                                        </button>
-                                    </>
+                                        {task.dueDate && (
+                                            <span className={
+                                                getDueStatus(task.dueDate) === "overdue"
+                                                    ? "text-red-500"
+                                                    : getDueStatus(task.dueDate) === "today"
+                                                        ? "text-orange-500"
+                                                        : "text-gray-400"
+                                            }>
+                                                {task.dueDate}
+                                                {getDueStatus(task.dueDate) === "overdue" && " • Overdue"}
+                                                {getDueStatus(task.dueDate) === "today" && " • Today"}
+                                            </span>
+                                        )}
+                                    </div>
                                 )}
-                            </div>
-                        </div>
-                    ))}
+
+                                <div className="flex gap-2 mt-3">
+
+                                    <button
+                                        onClick={() => toggleTask(task.id)}
+                                        className="px-3 py-1 rounded-lg bg-black text-white hover:opacity-80 transition"
+                                    >
+                                        {task.completed ? "Undo" : "Complete"}
+                                    </button>
+
+                                    {editingId === task.id ? (
+                                        <>
+                                            <button
+                                                onClick={() => saveEdit(task.id)}
+                                                className="px-3 py-1 rounded-lg border hover:bg-gray-100 transition"
+                                            >
+                                                Save
+                                            </button>
+
+                                            <button
+                                                onClick={cancelEdit}
+                                                className="px-3 py-1 rounded-lg border hover:bg-gray-100 transition"
+                                            >
+                                                Cancel
+                                            </button>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <button
+                                                onClick={() => startEdit(task)}
+                                                className="px-3 py-1 rounded-lg border hover:bg-gray-100 transition"
+                                            >
+                                                Edit
+                                            </button>
+
+                                            <button
+                                                onClick={() => deleteTask(task.id)}
+                                                className="px-3 py-1 rounded-lg border text-red-500 hover:bg-red-50 transition"
+                                            >
+                                                Delete
+                                            </button>
+                                        </>
+                                    )}
+                                </div>
+                            </motion.div>
+                        ))}
+                    </AnimatePresence>
                 </div>
             </div>
         </div>
