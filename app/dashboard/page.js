@@ -19,6 +19,7 @@ export default function Page() {
 
     const [editingId, setEditingId] = useState(null);
     const [editingTitle, setEditingTitle] = useState("");
+    const [toast, setToast] = useState(null);
 
     /* ---------------- LOAD ---------------- */
 
@@ -72,6 +73,7 @@ export default function Page() {
         };
 
         setTasks(prev => [...prev, newTask]);
+        showToast("Task added 🚀");
 
         setTitle("");
         setDueDate("");
@@ -87,15 +89,17 @@ export default function Page() {
                     : task
             )
         );
+        showToast("Task status updated ✅");
     };
 
     const deleteTask = (id) => {
         setTasks(prev => prev.filter(task => task.id !== id));
+        showToast("Task deleted 🗑️");
     };
 
     const startEdit = (task) => {
         setEditingId(task.id);
-        setEditingTitle(task.title);
+        setEditingTitle(task.title);        
     };
 
     const cancelEdit = () => {
@@ -115,6 +119,7 @@ export default function Page() {
         );
 
         cancelEdit();
+        showToast("Task updated ✨");
     };
 
     /* ---------------- FILTER ---------------- */
@@ -163,8 +168,18 @@ export default function Page() {
 
     /* ---------------- UI ---------------- */
 
+    const showToast = (message) => {
+        setToast(message);
+        setTimeout(() => setToast(null), 2000);
+    };
+
     return (
         <div className="min-h-screen bg-gray-100 p-10">
+            {toast && (
+                <div className="fixed bottom-5 right-5 bg-black text-white px-4 py-2 rounded-lg shadow-lg">
+                    {toast}
+                </div>
+            )}
             <div className="max-w-3xl mx-auto bg-white rounded-2xl shadow-sm p-6">
 
                 <h1 className="text-2xl font-bold mb-6">Dashboard</h1>
