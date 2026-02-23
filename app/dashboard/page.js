@@ -37,6 +37,10 @@ export default function Page() {
         if (storedTasks) {
             setTasks(JSON.parse(storedTasks));
         }
+
+        const storedSort = localStorage.getItem("sortType");
+        if (storedSort) setSortType(storedSort);
+
     }, []);
 
     /* ---------------- SAVE ---------------- */
@@ -45,6 +49,9 @@ export default function Page() {
         localStorage.setItem("tasks", JSON.stringify(tasks));
     }, [tasks]);
 
+    useEffect(() => {
+        localStorage.setItem("sortType", sortType);
+    }, [sortType]);
     /* ---------------- ACTIONS ---------------- */
     const addTask = () => {
         const trimmedTitle = title.trim();
@@ -247,6 +254,7 @@ export default function Page() {
                         onChange={(e) => setTitle(e.target.value)}
                         onKeyDown={(e) => {
                             if (e.key === "Enter") addTask();
+                            if (e.key === "Escape") setTitle("");
                         }}
                     />
 
